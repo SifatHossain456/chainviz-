@@ -1,17 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 
-function StatItem({ label, value, color }) {
-  return (
-    <div className="flex flex-col items-center sm:items-start gap-0.5">
-      <span className="text-[9px] uppercase tracking-widest text-[#475569]">{label}</span>
-      <span className="text-lg font-black font-mono tabular-nums" style={color ? { color } : {}}>
-        {value}
-      </span>
-    </div>
-  )
-}
-
 export default function GlobalStats({ chains, lastUpdate }) {
   const [age, setAge] = useState(0)
 
@@ -28,35 +17,43 @@ export default function GlobalStats({ chains, lastUpdate }) {
     const blocks = c.blocks ?? []
     if (blocks.length < 2) return sum + (blocks[0]?.txCount ?? 0) / c.avgBlockTime
     const dt = blocks[0].timestamp - blocks[1].timestamp
-    if (dt <= 0) return sum
-    return sum + blocks[0].txCount / dt
+    return dt > 0 ? sum + blocks[0].txCount / dt : sum
   }, 0)
-
-  const totalTxsInLatest = chains.reduce((s, c) => s + (c.blocks?.[0]?.txCount ?? 0), 0)
 
   const avgGas = chains.length > 0
     ? (chains.reduce((s, c) => s + (c.gasPrice ?? 0), 0) / chains.length).toFixed(1)
     : null
 
   return (
-    <div className="bg-[#0a0f1e] border border-[#1e293b] rounded-2xl px-5 py-4">
-      <div className="flex flex-wrap gap-6 items-center">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 live-dot" />
-          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Live</span>
-        </div>
-
-        <div className="w-px h-8 bg-[#1e293b] hidden sm:block" />
-
-        <StatItem label="Total TPS" value={totalTps > 0 ? totalTps.toFixed(1) : '…'} color="#f1f5f9" />
-        <StatItem label="Txs (latest blocks)" value={totalTxsInLatest > 0 ? totalTxsInLatest.toLocaleString() : '…'} />
-        <StatItem label="Active Chains" value={`${active} / 5`} color="#22d3ee" />
-        {avgGas && <StatItem label="Avg Gas" value={`${avgGas} gwei`} color="#fb923c" />}
-
-        <div className="ml-auto text-[10px] text-[#334155] font-mono tabular-nums">
-          {age}s ago
-        </div>
+    <aside
+      className="card flex flex-wrap items-center gap-x-6 gap-y-3 px-5 py-3.5"
+      aria-label="Global network statistics"
+    >
+      <div className="flex items-center gap-2 shrink-0">
+        <span className="w-2 h-2 rounded-full live-dot" style={{ background: 'var(--green)' }} aria-hidden />
+        <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--green)' }}>
+          Live
+        </span>
       </div>
+
+      <div className="w-px h-4 hidden sm:block" style={{ background: 'var(--border)' }} aria-hidden />
+
+      <StatItem label="Total TPS"   value={totalTps > 0 ? totalTps.toFixed(1) : '…'} />
+      <StatItem label="Active"      value={`${active} / 5 chains`} />
+      {avgGas && <StatItem label="Avg Gas" value={`${avgGas} gwei`} color="var(--yellow)" />}
+
+      <div className="ml-auto text-[10px] mono tabular" style={{ color: 'var(--text-4)' }}>
+        {age}s ago
+      </div>
+    </aside>
+  )
+}
+
+function StatItem({ label, value, color }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[9px] uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>{label}</span>
+      <span className="text-sm font-bold mono" style={color ? { color } : { color: 'var(--text-1)' }}>{value}</span>
     </div>
   )
 }
