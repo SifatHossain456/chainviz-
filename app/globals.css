@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #030712;
+  color: #f1f5f9;
+  font-family: ui-monospace, 'Geist Mono', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+@keyframes slide-in {
+  from { transform: translateX(calc(100% + 16px)); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.25; transform: scale(0.75); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes count-tick {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.block-enter {
+  animation: slide-in 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+
+.live-dot {
+  animation: pulse-live 1.3s ease-in-out infinite;
+}
+
+.fade-up {
+  animation: fade-up 0.5s ease-out forwards;
+}
+
+.num-tick {
+  animation: count-tick 0.2s ease-out forwards;
+}
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
