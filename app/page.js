@@ -10,16 +10,17 @@ export default function HomePage() {
   const [chains,     setChains]     = useState([])
   const [lastUpdate, setLastUpdate] = useState(null)
   const [loading,    setLoading]    = useState(true)
+  const [error,      setError]      = useState(false)
   const historyRef = useRef({})
 
   const fetchBlocks = useCallback(async () => {
     try {
       const res = await fetch('/api/blocks', { cache: 'no-store' })
-      if (!res.ok) throw new Error('fetch failed')
+      if (!res.ok) throw new Error(`API ${res.status}`)
       const data = await res.json()
 
       const next = {}
-      data.chains.forEach(chain => {
+      data.chains.filter(c => !c.error).forEach(chain => {
         const prev   = historyRef.current[chain.id] ?? []
         const latest = { ...chain.block, isNew: false }
         const isNew  = prev.length === 0 || prev[0].number !== latest.number
@@ -32,8 +33,10 @@ export default function HomePage() {
 
       setChains(data.chains.map(c => ({ ...c, blocks: next[c.id] ?? [] })))
       setLastUpdate(data.ts)
+      setError(false)
       setLoading(false)
     } catch {
+      setError(true)
       setLoading(false)
     }
   }, [])
@@ -75,6 +78,16 @@ export default function HomePage() {
               {Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="card h-36 skeleton" style={{ animationDelay: `${i * 80}ms` }} />
               ))}
+            </div>
+          ) : error ? (
+            <div role="alert" className="card flex flex-col items-center justify-center gap-3 py-12 text-center">
+              <p className="text-sm text-[#ef4444]">Failed to fetch block data.</p>
+              <button
+                onClick={fetchBlocks}
+                className="px-4 py-1.5 text-xs rounded-lg bg-[#1e293b] text-[#94a3b8] hover:text-[#f0f4ff] transition-colors"
+              >
+                Retry
+              </button>
             </div>
           ) : (
             <div className="space-y-3">

@@ -45,9 +45,11 @@ export async function GET() {
     })
   )
 
-  const chains = results
-    .filter(r => r.status === 'fulfilled')
-    .map(r => r.value)
+  const chains = results.map((r, i) =>
+    r.status === 'fulfilled'
+      ? r.value
+      : { id: CHAINS[i].chain.id, label: CHAINS[i].label, color: CHAINS[i].color, error: true, block: null }
+  )
 
   return Response.json({ chains, ts: Date.now() }, {
     headers: { 'Cache-Control': 'no-store, no-cache' },
