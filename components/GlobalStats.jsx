@@ -15,7 +15,7 @@ export default function GlobalStats({ chains, lastUpdate }) {
 
   const totalTps = chains.reduce((sum, c) => {
     const blocks = c.blocks ?? []
-    if (blocks.length < 2) return sum + (blocks[0]?.txCount ?? 0) / c.avgBlockTime
+    if (blocks.length < 2) return sum + (c.avgBlockTime > 0 ? (blocks[0]?.txCount ?? 0) / c.avgBlockTime : 0)
     const dt = blocks[0].timestamp - blocks[1].timestamp
     return dt > 0 ? sum + blocks[0].txCount / dt : sum
   }, 0)

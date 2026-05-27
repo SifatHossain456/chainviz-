@@ -48,11 +48,11 @@ export default function Navbar() {
         </div>
 
         {/* Live indicator */}
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2" role="status" aria-label="Live data">
           <span
             className="w-2 h-2 rounded-full live-dot"
             style={{ background: 'var(--green)' }}
-            aria-label="Live data"
+            aria-hidden="true"
           />
           <span className="text-xs text-[#475569] hidden sm:block">Live · 5 Chains</span>
         </div>
